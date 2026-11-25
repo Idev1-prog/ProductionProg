@@ -1,0 +1,47 @@
+{
+  "name": "03 RAW conflict",
+  "description": "Читатель пытается читать resource_key, который сейчас пишется — блокировка RAW",
+  "settings": {
+    "manual_base": 1000,
+    "sla_weight": 60,
+    "urgency_weight": 30,
+    "starvation_weight": 10,
+    "max_running": 3,
+    "tick_interval": 0.5
+  },
+  "processes": [
+    {
+      "name": "Ночная запись витрины",
+      "flow": "auto",
+      "urgency": 9,
+      "duration_sec": 25,
+      "sla_in_sec": 90,
+      "resources": [
+        {"key": "dm_credit.portfolio", "mode": "write", "service": "risk-db"}
+      ],
+      "meta": {"scenario": "raw", "order": 1}
+    },
+    {
+      "name": "Отчёт по витрине",
+      "flow": "auto",
+      "urgency": 8,
+      "duration_sec": 10,
+      "sla_in_sec": 150,
+      "resources": [
+        {"key": "dm_credit.portfolio", "mode": "read", "service": "risk-db"}
+      ],
+      "meta": {"scenario": "raw", "order": 2}
+    },
+    {
+      "name": "Независимый расчёт",
+      "flow": "auto",
+      "urgency": 3,
+      "duration_sec": 10,
+      "sla_in_sec": 500,
+      "resources": [
+        {"key": "dm_ops.events", "mode": "write", "service": "dwh"}
+      ],
+      "meta": {"scenario": "raw", "order": 3}
+    }
+  ]
+}

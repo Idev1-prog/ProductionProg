@@ -1,0 +1,47 @@
+{
+  "name": "02 WAW conflict",
+  "description": "Два процесса пишут в один resource_key — второй блокируется (WAW)",
+  "settings": {
+    "manual_base": 1000,
+    "sla_weight": 60,
+    "urgency_weight": 30,
+    "starvation_weight": 10,
+    "max_running": 3,
+    "tick_interval": 0.5
+  },
+  "processes": [
+    {
+      "name": "Запись портфеля — регламент",
+      "flow": "auto",
+      "urgency": 9,
+      "duration_sec": 25,
+      "sla_in_sec": 90,
+      "resources": [
+        {"key": "dm_credit.portfolio", "mode": "write", "service": "risk-db"}
+      ],
+      "meta": {"scenario": "waw", "order": 1}
+    },
+    {
+      "name": "Запись портфеля — пересчёт",
+      "flow": "auto",
+      "urgency": 7,
+      "duration_sec": 15,
+      "sla_in_sec": 180,
+      "resources": [
+        {"key": "dm_credit.portfolio", "mode": "write", "service": "risk-db"}
+      ],
+      "meta": {"scenario": "waw", "order": 2}
+    },
+    {
+      "name": "Параллельный расчёт резервов",
+      "flow": "auto",
+      "urgency": 4,
+      "duration_sec": 10,
+      "sla_in_sec": 400,
+      "resources": [
+        {"key": "dm_reserves.ecl", "mode": "write", "service": "risk-db"}
+      ],
+      "meta": {"scenario": "waw", "order": 3}
+    }
+  ]
+}

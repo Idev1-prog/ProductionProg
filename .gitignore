@@ -221,3 +221,8 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Risk Orchestrator local state
+*.db
+*.db-journal
+data/orchestrator.db

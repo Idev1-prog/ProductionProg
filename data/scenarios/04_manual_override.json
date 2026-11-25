@@ -1,0 +1,58 @@
+{
+  "name": "04 Manual override",
+  "description": "Ручной процесс вытесняет автоматический с того же resource_key (OVERRIDE)",
+  "settings": {
+    "manual_base": 1000,
+    "sla_weight": 60,
+    "urgency_weight": 30,
+    "starvation_weight": 10,
+    "max_running": 2,
+    "tick_interval": 0.5
+  },
+  "processes": [
+    {
+      "name": "Ночной пересчёт портфеля",
+      "flow": "auto",
+      "urgency": 10,
+      "duration_sec": 40,
+      "sla_in_sec": 60,
+      "resources": [
+        {"key": "dm_credit.portfolio", "mode": "write", "service": "risk-db"}
+      ],
+      "meta": {"scenario": "override", "order": 1}
+    },
+    {
+      "name": "Справочник параметров",
+      "flow": "auto",
+      "urgency": 4,
+      "duration_sec": 15,
+      "sla_in_sec": 300,
+      "resources": [
+        {"key": "dm_credit.params", "mode": "read", "service": "risk-db"}
+      ],
+      "meta": {"scenario": "override", "order": 2}
+    },
+    {
+      "name": "Срочный пересчёт аналитика",
+      "flow": "manual",
+      "urgency": 9,
+      "duration_sec": 12,
+      "sla_in_sec": 60,
+      "resources": [
+        {"key": "dm_credit.portfolio", "mode": "write", "service": "risk-db"}
+      ],
+      "meta": {"scenario": "override", "order": 3, "owner": "analyst.ivanov"}
+    },
+    {
+      "name": "Ручная проверка отчёта",
+      "flow": "manual",
+      "urgency": 5,
+      "duration_sec": 8,
+      "sla_in_sec": 90,
+      "resources": [
+        {"key": "dm_reports.night", "mode": "read", "service": "dwh"}
+      ],
+      "meta": {"scenario": "override", "order": 4}
+    }
+  ]
+}

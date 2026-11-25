@@ -1,0 +1,146 @@
+%PDF-1.4
+%‚„œ”
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [6 0 R 8 0 R 10 0 R 12 0 R 14 0 R 16 0 R] /Count 6 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+4 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>
+endobj
+5 0 obj
+<< /Length 451 >>
+stream
+BT /F2 28 Tf 56 770 Td (Risk Orchestrator) Tj ET
+0.35 w 56 750 m 539 750 l S
+BT /F2 15 Tf 56 710 Td (Process orchestration for risk calculations) Tj ET
+BT /F2 15 Tf 56 662 Td (Hackathon MVP) Tj ET
+BT /F1 12 Tf 56 632 Td (FastAPI + Streamlit + Plotly) Tj ET
+BT /F1 12 Tf 56 608 Td (Priority queue, RAW/WAW locks, Gantt) Tj ET
+BT /F1 12 Tf 56 570 Td (No more races in the night cycle.) Tj ET
+BT /F1 9 Tf 56 36 Td (Risk Orchestrator  |  page 1 / 6) Tj ET
+endstream
+endobj
+6 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents 5 0 R >>
+endobj
+7 0 obj
+<< /Length 623 >>
+stream
+BT /F2 28 Tf 56 770 Td (Problem) Tj ET
+0.35 w 56 750 m 539 750 l S
+BT /F1 12 Tf 64 710 Td (- Two independent flows: night cycle vs manual analysts) Tj ET
+BT /F1 12 Tf 64 682 Td (- No shared queue: priority inversion and SLA misses) Tj ET
+BT /F1 12 Tf 64 654 Td (- Concurrent READ/WRITE on the same partitions) Tj ET
+BT /F1 12 Tf 64 626 Td (- RAW/WAW races and silent data corruption) Tj ET
+BT /F1 12 Tf 64 598 Td (- No observability: queue, locks and load are a black box) Tj ET
+BT /F1 12 Tf 56 556 Td (The error is discovered only in the morning report.) Tj ET
+BT /F1 9 Tf 56 36 Td (Risk Orchestrator  |  page 2 / 6) Tj ET
+endstream
+endobj
+8 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents 7 0 R >>
+endobj
+9 0 obj
+<< /Length 723 >>
+stream
+BT /F2 28 Tf 56 770 Td (Solution) Tj ET
+0.35 w 56 750 m 539 750 l S
+BT /F1 12 Tf 64 710 Td (- Single priority queue: manual flow has absolute priority) Tj ET
+BT /F1 12 Tf 64 682 Td (- Auto score = SLA + urgency + anti-starvation) Tj ET
+BT /F1 12 Tf 64 654 Td (- Granular locks by resource_key: table / slice / date) Tj ET
+BT /F1 12 Tf 64 626 Td (- RAW/WAW detection before start, conflicts are logged) Tj ET
+BT /F1 12 Tf 64 598 Td (- Manual preempts auto \(OVERRIDE\), auto returns to queue) Tj ET
+BT /F1 12 Tf 64 570 Td (- Gantt, load heatmap, queue and conflict journal) Tj ET
+BT /F1 12 Tf 64 542 Td (- No-code priority weights, applied without restart) Tj ET
+BT /F1 9 Tf 56 36 Td (Risk Orchestrator  |  page 3 / 6) Tj ET
+endstream
+endobj
+10 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents 9 0 R >>
+endobj
+11 0 obj
+<< /Length 925 >>
+stream
+BT /F2 28 Tf 56 770 Td (Architecture) Tj ET
+0.35 w 56 750 m 539 750 l S
+BT /F1 12 Tf 56 710 Td (Streamlit UI  ->  FastAPI  ->  Orchestrator  ->  Storage) Tj ET
+BT /F1 12 Tf 56 686 Td (                        |             |) Tj ET
+BT /F1 12 Tf 56 662 Td (                        |        priority.py) Tj ET
+BT /F1 12 Tf 56 638 Td (                        |        conflicts.py) Tj ET
+BT /F1 12 Tf 56 614 Td (                        |        state_machine.py) Tj ET
+BT /F1 12 Tf 56 590 Td (                        |        worker.py) Tj ET
+BT /F1 12 Tf 64 552 Td (- Storage: processes, locks, conflicts, events, settings) Tj ET
+BT /F1 12 Tf 64 524 Td (- Optional SQLite snapshot: queue survives restart) Tj ET
+BT /F1 12 Tf 64 496 Td (- Core has no FastAPI imports: unit-testable) Tj ET
+BT /F1 12 Tf 56 454 Td (API contract is frozen; UI uses only HTTP JSON.) Tj ET
+BT /F1 9 Tf 56 36 Td (Risk Orchestrator  |  page 4 / 6) Tj ET
+endstream
+endobj
+12 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents 11 0 R >>
+endobj
+13 0 obj
+<< /Length 671 >>
+stream
+BT /F2 28 Tf 56 770 Td (Demo scenarios) Tj ET
+0.35 w 56 750 m 539 750 l S
+BT /F1 12 Tf 64 710 Td (- 01 happy path: disjoint resources, zero conflicts) Tj ET
+BT /F1 12 Tf 64 682 Td (- 02 WAW: two writers on dm_credit.portfolio) Tj ET
+BT /F1 12 Tf 64 654 Td (- 03 RAW: reader waits for the night writer) Tj ET
+BT /F1 12 Tf 64 626 Td (- 04 override: manual analyst preempts auto) Tj ET
+BT /F1 12 Tf 64 598 Td (- Main: night cycle + two manual recalculations) Tj ET
+BT /F1 12 Tf 56 556 Td (python scripts/demo_runner.py --delay 4) Tj ET
+BT /F1 12 Tf 56 532 Td (pytest -q  ->  priority, conflicts, API smoke) Tj ET
+BT /F1 9 Tf 56 36 Td (Risk Orchestrator  |  page 5 / 6) Tj ET
+endstream
+endobj
+14 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents 13 0 R >>
+endobj
+15 0 obj
+<< /Length 657 >>
+stream
+BT /F2 28 Tf 56 770 Td (Impact and next steps) Tj ET
+0.35 w 56 750 m 539 750 l S
+BT /F1 12 Tf 64 710 Td (- Predictable night cycle and SLA control) Tj ET
+BT /F1 12 Tf 64 682 Td (- Manual jobs start immediately, no priority inversion) Tj ET
+BT /F1 12 Tf 64 654 Td (- No silent corruption: conflicts are prevented and logged) Tj ET
+BT /F1 12 Tf 64 626 Td (- Incident review in minutes from the event journal) Tj ET
+BT /F2 15 Tf 56 584 Td (Next) Tj ET
+BT /F1 12 Tf 56 554 Td (Distributed locks, PostgreSQL, RBAC,) Tj ET
+BT /F1 12 Tf 56 530 Td (duration prediction, LLM incident explanations.) Tj ET
+BT /F1 9 Tf 56 36 Td (Risk Orchestrator  |  page 6 / 6) Tj ET
+endstream
+endobj
+16 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents 15 0 R >>
+endobj
+xref
+0 17
+0000000000 65535 f 
+0000000015 00000 n 
+0000000064 00000 n 
+0000000155 00000 n 
+0000000225 00000 n 
+0000000300 00000 n 
+0000000802 00000 n 
+0000000938 00000 n 
+0000001612 00000 n 
+0000001748 00000 n 
+0000002522 00000 n 
+0000002659 00000 n 
+0000003636 00000 n 
+0000003774 00000 n 
+0000004497 00000 n 
+0000004635 00000 n 
+0000005344 00000 n 
+trailer
+<< /Size 17 /Root 1 0 R >>
+startxref
+5482
+%%EOF

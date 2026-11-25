@@ -1,0 +1,107 @@
+{
+  "name": "Основной демо-сценарий",
+  "description": "Ночной регламентный цикл и ручные пересчёты аналитиков на общих ресурсах",
+  "settings": {
+    "manual_base": 1000,
+    "sla_weight": 60,
+    "urgency_weight": 30,
+    "starvation_weight": 10,
+    "max_running": 3,
+    "tick_interval": 0.5
+  },
+  "processes": [
+    {
+      "name": "Ночной расчёт кредитного риска",
+      "flow": "auto",
+      "urgency": 9,
+      "duration_sec": 25,
+      "sla_in_sec": 120,
+      "resources": [
+        {"key": "dm_credit.portfolio", "mode": "write", "service": "risk-db"},
+        {"key": "dm_credit.params", "mode": "read", "service": "risk-db"}
+      ],
+      "meta": {"owner": "risk-night", "class": "regulatory"}
+    },
+    {
+      "name": "Ночной расчёт рыночного риска",
+      "flow": "auto",
+      "urgency": 7,
+      "duration_sec": 20,
+      "sla_in_sec": 240,
+      "resources": [
+        {"key": "dm_market.positions", "mode": "write", "service": "market-db"},
+        {"key": "dm_market.quotes", "mode": "read", "service": "market-db"}
+      ],
+      "meta": {"owner": "risk-night", "class": "regulatory"}
+    },
+    {
+      "name": "Резервы IFRS9",
+      "flow": "auto",
+      "urgency": 8,
+      "duration_sec": 18,
+      "sla_in_sec": 180,
+      "resources": [
+        {"key": "dm_reserves.ecl", "mode": "write", "service": "risk-db"},
+        {"key": "dm_credit.portfolio", "mode": "read", "service": "risk-db"}
+      ],
+      "meta": {"owner": "finance", "class": "reporting"}
+    },
+    {
+      "name": "Операционный риск",
+      "flow": "auto",
+      "urgency": 4,
+      "duration_sec": 12,
+      "sla_in_sec": 600,
+      "resources": [
+        {"key": "dm_ops.events", "mode": "write", "service": "dwh"}
+      ],
+      "meta": {"owner": "ops-risk", "class": "daily"}
+    },
+    {
+      "name": "Капитал Базель",
+      "flow": "auto",
+      "urgency": 6,
+      "duration_sec": 15,
+      "sla_in_sec": 300,
+      "resources": [
+        {"key": "dm_capital.rwa", "mode": "write", "service": "risk-db"},
+        {"key": "dm_market.positions", "mode": "read", "service": "market-db"}
+      ],
+      "meta": {"owner": "capital", "class": "regulatory"}
+    },
+    {
+      "name": "Ручной пересчёт кредита за 25.11",
+      "flow": "manual",
+      "urgency": 9,
+      "duration_sec": 12,
+      "sla_in_sec": 60,
+      "resources": [
+        {"key": "dm_credit.portfolio", "mode": "write", "service": "risk-db"}
+      ],
+      "meta": {"owner": "analyst.ivanov", "reason": "ad-hoc"}
+    },
+    {
+      "name": "Ручная проверка рыночных позиций",
+      "flow": "manual",
+      "urgency": 5,
+      "duration_sec": 8,
+      "sla_in_sec": 90,
+      "resources": [
+        {"key": "dm_market.positions", "mode": "read", "service": "market-db"}
+      ],
+      "meta": {"owner": "analyst.petrova", "reason": "ad-hoc"}
+    },
+    {
+      "name": "Регламент ночной отчётности",
+      "flow": "auto",
+      "urgency": 3,
+      "duration_sec": 10,
+      "sla_in_sec": 900,
+      "resources": [
+        {"key": "dm_reports.night", "mode": "write", "service": "dwh"},
+        {"key": "dm_reserves.ecl", "mode": "read", "service": "risk-db"}
+      ],
+      "meta": {"owner": "reporting", "class": "daily"}
+    }
+  ]
+}

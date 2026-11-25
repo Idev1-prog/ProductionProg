@@ -1,0 +1,58 @@
+{
+  "name": "01 Happy path",
+  "description": "Все процессы работают с разными ресурсами — конфликтов нет",
+  "settings": {
+    "manual_base": 1000,
+    "sla_weight": 60,
+    "urgency_weight": 30,
+    "starvation_weight": 10,
+    "max_running": 3,
+    "tick_interval": 0.5
+  },
+  "processes": [
+    {
+      "name": "Кредитный риск",
+      "flow": "auto",
+      "urgency": 8,
+      "duration_sec": 14,
+      "sla_in_sec": 120,
+      "resources": [
+        {"key": "dm_credit.portfolio", "mode": "write", "service": "risk-db"}
+      ],
+      "meta": {"scenario": "happy_path"}
+    },
+    {
+      "name": "Рыночный риск",
+      "flow": "auto",
+      "urgency": 7,
+      "duration_sec": 12,
+      "sla_in_sec": 180,
+      "resources": [
+        {"key": "dm_market.positions", "mode": "write", "service": "market-db"}
+      ],
+      "meta": {"scenario": "happy_path"}
+    },
+    {
+      "name": "Операционный риск",
+      "flow": "auto",
+      "urgency": 5,
+      "duration_sec": 10,
+      "sla_in_sec": 300,
+      "resources": [
+        {"key": "dm_ops.events", "mode": "write", "service": "dwh"}
+      ],
+      "meta": {"scenario": "happy_path"}
+    },
+    {
+      "name": "Ручной пересчёт капитала",
+      "flow": "manual",
+      "urgency": 6,
+      "duration_sec": 8,
+      "sla_in_sec": 60,
+      "resources": [
+        {"key": "dm_capital.rwa", "mode": "write", "service": "risk-db"}
+      ],
+      "meta": {"scenario": "happy_path"}
+    }
+  ]
+}
