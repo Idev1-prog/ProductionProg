@@ -1,0 +1,1324 @@
+{
+  "name": "Синтетический сценарий (seed=7, count=50)",
+  "description": "Сгенерирован data/generator.py для проверки нагрузки и конфликтов",
+  "settings": {
+    "manual_base": 1000,
+    "sla_weight": 60,
+    "urgency_weight": 30,
+    "starvation_weight": 10,
+    "max_running": 4,
+    "tick_interval": 0.5
+  },
+  "processes": [
+    {
+      "name": "Ручной пересчёт #1",
+      "flow": "manual",
+      "urgency": 8,
+      "duration_sec": 10,
+      "sla_in_sec": 60,
+      "resources": [
+        {
+          "key": "dm_credit.portfolio",
+          "mode": "read",
+          "service": "risk-db"
+        },
+        {
+          "key": "dm_credit.collateral",
+          "mode": "read",
+          "service": "risk-db"
+        },
+        {
+          "key": "dm_capital.rwa",
+          "mode": "write",
+          "service": "risk-db"
+        }
+      ],
+      "meta": {
+        "synthetic": true,
+        "seed": 7,
+        "index": 0,
+        "owner": "analyst"
+      }
+    },
+    {
+      "name": "Регламентный расчёт #2",
+      "flow": "auto",
+      "urgency": 4,
+      "duration_sec": 45,
+      "sla_in_sec": 60,
+      "resources": [
+        {
+          "key": "dm_capital.rwa",
+          "mode": "write",
+          "service": "calc-cluster"
+        },
+        {
+          "key": "dm_credit.params",
+          "mode": "write",
+          "service": "risk-db"
+        }
+      ],
+      "meta": {
+        "synthetic": true,
+        "seed": 7,
+        "index": 1,
+        "owner": "scheduler"
+      }
+    },
+    {
+      "name": "Регламентный расчёт #3",
+      "flow": "auto",
+      "urgency": 9,
+      "duration_sec": 15,
+      "sla_in_sec": 600,
+      "resources": [
+        {
+          "key": "dm_reports.daily",
+          "mode": "read",
+          "service": "risk-db"
+        },
+        {
+          "key": "dm_capital.rwa",
+          "mode": "write",
+          "service": "market-db"
+        },
+        {
+          "key": "dm_credit.portfolio",
+          "mode": "write",
+          "service": "market-db"
+        }
+      ],
+      "meta": {
+        "synthetic": true,
+        "seed": 7,
+        "index": 2,
+        "owner": "scheduler"
+      }
+    },
+    {
+      "name": "Регламентный расчёт #4",
+      "flow": "auto",
+      "urgency": 1,
+      "duration_sec": 21,
+      "sla_in_sec": 300,
+      "resources": [
+        {
+          "key": "dm_reports.night",
+          "mode": "write",
+          "service": "market-db"
+        },
+        {
+          "key": "dm_credit.collateral",
+          "mode": "write",
+          "service": "risk-db"
+        }
+      ],
+      "meta": {
+        "synthetic": true,
+        "seed": 7,
+        "index": 3,
+        "owner": "scheduler"
+      }
+    },
+    {
+      "name": "Регламентный расчёт #5",
+      "flow": "auto",
+      "urgency": 9,
+      "duration_sec": 39,
+      "sla_in_sec": 180,
+      "resources": [
+        {
+          "key": "dm_credit.portfolio",
+          "mode": "write",
+          "service": "calc-cluster"
+        },
+        {
+          "key": "dm_reports.night",
+          "mode": "write",
+          "service": "market-db"
+        },
+        {
+          "key": "dm_capital.rwa",
+          "mode": "read",
+          "service": "market-db"
+        },
+        {
+          "key": "dm_reserves.ecl",
+          "mode": "write",
+          "service": "dwh"
+        }
+      ],
+      "meta": {
+        "synthetic": true,
+        "seed": 7,
+        "index": 4,
+        "owner": "scheduler"
+      }
+    },
+    {
+      "name": "Ручной пересчёт #6",
+      "flow": "manual",
+      "urgency": 10,
+      "duration_sec": 10,
+      "sla_in_sec": 900,
+      "resources": [
+        {
+          "key": "dm_ops.events",
+          "mode": "write",
+          "service": "calc-cluster"
+        },
+        {
+          "key": "dm_market.quotes",
+          "mode": "write",
+          "service": "dwh"
+        },
+        {
+          "key": "dm_credit.params",
+          "mode": "write",
+          "service": "calc-cluster"
+        }
+      ],
+      "meta": {
+        "synthetic": true,
+        "seed": 7,
+        "index": 5,
+        "owner": "analyst"
+      }
+    },
+    {
+      "name": "Регламентный расчёт #7",
+      "flow": "auto",
+      "urgency": 6,
+      "duration_sec": 30,
+      "sla_in_sec": 600,
+      "resources": [
+        {
+          "key": "dm_reports.night",
+          "mode": "write",
+          "service": "dwh"
+        }
+      ],
+      "meta": {
+        "synthetic": true,
+        "seed": 7,
+        "index": 6,
+        "owner": "scheduler"
+      }
+    },
+    {
+      "name": "Регламентный расчёт #8",
+      "flow": "auto",
+      "urgency": 2,
+      "duration_sec": 11,
+      "sla_in_sec": 900,
+      "resources": [
+        {
+          "key": "dm_reports.daily",
+          "mode": "write",
+          "service": "risk-db"
+        },
+        {
+          "key": "dm_ops.events",
+          "mode": "read",
+          "service": "calc-cluster"
+        }
+      ],
+      "meta": {
+        "synthetic": true,
+        "seed": 7,
+        "index": 7,
+        "owner": "scheduler"
+      }
+    },
+    {
+      "name": "Регламентный расчёт #9",
+      "flow": "auto",
+      "urgency": 5,
+      "duration_sec": 16,
+      "sla_in_sec": 900,
+      "resources": [
+        {
+          "key": "dm_credit.portfolio",
+          "mode": "read",
+          "service": "dwh"
+        },
+        {
+          "key": "dm_market.quotes",
+          "mode": "write",
+          "service": "calc-cluster"
+        },
+        {
+          "key": "dm_ops.events",
+          "mode": "write",
+          "service": "risk-db"
+        },
+        {
+          "key": "dm_reports.daily",
+          "mode": "write",
+          "service": "market-db"
+        }
+      ],
+      "meta": {
+        "synthetic": true,
+        "seed": 7,
+        "index": 8,
+        "owner": "scheduler"
+      }
+    },
+    {
+      "name": "Регламентный расчёт #10",
+      "flow": "auto",
+      "urgency": 2,
+      "duration_sec": 18,
+      "sla_in_sec": 300,
+      "resources": [
+        {
+          "key": "dm_capital.rwa",
+          "mode": "write",
+          "service": "calc-cluster"
+        }
+      ],
+      "meta": {
+        "synthetic": true,
+        "seed": 7,
+        "index": 9,
+        "owner": "scheduler"
+      }
+    },
+    {
+      "name": "Ручной пересчёт #11",
+      "flow": "manual",
+      "urgency": 10,
+      "duration_sec": 30,
+      "sla_in_sec": 900,
+      "resources": [
+        {
+          "key": "dm_reports.night",
+          "mode": "read",
+          "service": "calc-cluster"
+        },
+        {
+          "key": "dm_market.quotes",
+          "mode": "read",
+          "service": "dwh"
+        }
+      ],
+      "meta": {
+        "synthetic": true,
+        "seed": 7,
+        "index": 10,
+        "owner": "analyst"
+      }
+    },
+    {
+      "name": "Регламентный расчёт #12",
+      "flow": "auto",
+      "urgency": 1,
+      "duration_sec": 39,
+      "sla_in_sec": 600,
+      "resources": [
+        {
+          "key": "dm_market.positions",
+          "mode": "write",
+          "service": "market-db"
+        },
+        {
+          "key": "dm_credit.collateral",
+          "mode": "write",
+          "service": "market-db"
+        }
+      ],
+      "meta": {
+        "synthetic": true,
+        "seed": 7,
+        "index": 11,
+        "owner": "scheduler"
+      }
+    },
+    {
+      "name": "Регламентный расчёт #13",
+      "flow": "auto",
+      "urgency": 6,
+      "duration_sec": 16,
+      "sla_in_sec": 900,
+      "resources": [
+        {
+          "key": "dm_credit.portfolio",
+          "mode": "write",
+          "service": "market-db"
+        },
+        {
+          "key": "dm_market.quotes",
+          "mode": "write",
+          "service": "dwh"
+        }
+      ],
+      "meta": {
+        "synthetic": true,
+        "seed": 7,
+        "index": 12,
+        "owner": "scheduler"
+      }
+    },
+    {
+      "name": "Регламентный расчёт #14",
+      "flow": "auto",
+      "urgency": 1,
+      "duration_sec": 20,
+      "sla_in_sec": 60,
+      "resources": [
+        {
+          "key": "dm_reports.daily",
+          "mode": "read",
+          "service": "calc-cluster"
+        },
+        {
+          "key": "dm_credit.portfolio",
+          "mode": "write",
+          "service": "calc-cluster"
+        },
+        {
+          "key": "dm_ops.events",
+          "mode": "write",
+          "service": "calc-cluster"
+        }
+      ],
+      "meta": {
+        "synthetic": true,
+        "seed": 7,
+        "index": 13,
+        "owner": "scheduler"
+      }
+    },
+    {
+      "name": "Регламентный расчёт #15",
+      "flow": "auto",
+      "urgency": 1,
+      "duration_sec": 14,
+      "sla_in_sec": 60,
+      "resources": [
+        {
+          "key": "dm_ops.events",
+          "mode": "write",
+          "service": "dwh"
+        }
+      ],
+      "meta": {
+        "synthetic": true,
+        "seed": 7,
+        "index": 14,
+        "owner": "scheduler"
+      }
+    },
+    {
+      "name": "Ручной пересчёт #16",
+      "flow": "manual",
+      "urgency": 9,
+      "duration_sec": 30,
+      "sla_in_sec": 600,
+      "resources": [
+        {
+          "key": "dm_credit.collateral",
+          "mode": "read",
+          "service": "risk-db"
+        },
+        {
+          "key": "dm_reports.night",
+          "mode": "write",
+          "service": "market-db"
+        },
+        {
+          "key": "dm_credit.params",
+          "mode": "read",
+          "service": "market-db"
+        }
+      ],
+      "meta": {
+        "synthetic": true,
+        "seed": 7,
+        "index": 15,
+        "owner": "analyst"
+      }
+    },
+    {
+      "name": "Регламентный расчёт #17",
+      "flow": "auto",
+      "urgency": 2,
+      "duration_sec": 17,
+      "sla_in_sec": 60,
+      "resources": [
+        {
+          "key": "dm_credit.portfolio",
+          "mode": "write",
+          "service": "calc-cluster"
+        },
+        {
+          "key": "dm_ops.events",
+          "mode": "read",
+          "service": "calc-cluster"
+        },
+        {
+          "key": "dm_credit.params",
+          "mode": "write",
+          "service": "dwh"
+        }
+      ],
+      "meta": {
+        "synthetic": true,
+        "seed": 7,
+        "index": 16,
+        "owner": "scheduler"
+      }
+    },
+    {
+      "name": "Регламентный расчёт #18",
+      "flow": "auto",
+      "urgency": 3,
+      "duration_sec": 42,
+      "sla_in_sec": 60,
+      "resources": [
+        {
+          "key": "dm_reserves.ecl",
+          "mode": "read",
+          "service": "market-db"
+        },
+        {
+          "key": "dm_market.quotes",
+          "mode": "write",
+          "service": "market-db"
+        },
+        {
+          "key": "dm_ops.events",
+          "mode": "read",
+          "service": "dwh"
+        }
+      ],
+      "meta": {
+        "synthetic": true,
+        "seed": 7,
+        "index": 17,
+        "owner": "scheduler"
+      }
+    },
+    {
+      "name": "Регламентный расчёт #19",
+      "flow": "auto",
+      "urgency": 4,
+      "duration_sec": 20,
+      "sla_in_sec": 120,
+      "resources": [
+        {
+          "key": "dm_market.quotes",
+          "mode": "write",
+          "service": "market-db"
+        },
+        {
+          "key": "dm_credit.params",
+          "mode": "write",
+          "service": "market-db"
+        },
+        {
+          "key": "dm_reports.daily",
+          "mode": "write",
+          "service": "dwh"
+        }
+      ],
+      "meta": {
+        "synthetic": true,
+        "seed": 7,
+        "index": 18,
+        "owner": "scheduler"
+      }
+    },
+    {
+      "name": "Регламентный расчёт #20",
+      "flow": "auto",
+      "urgency": 5,
+      "duration_sec": 38,
+      "sla_in_sec": 180,
+      "resources": [
+        {
+          "key": "dm_market.positions",
+          "mode": "write",
+          "service": "dwh"
+        },
+        {
+          "key": "dm_reports.daily",
+          "mode": "read",
+          "service": "risk-db"
+        }
+      ],
+      "meta": {
+        "synthetic": true,
+        "seed": 7,
+        "index": 19,
+        "owner": "scheduler"
+      }
+    },
+    {
+      "name": "Ручной пересчёт #21",
+      "flow": "manual",
+      "urgency": 9,
+      "duration_sec": 13,
+      "sla_in_sec": 120,
+      "resources": [
+        {
+          "key": "dm_credit.portfolio",
+          "mode": "read",
+          "service": "calc-cluster"
+        },
+        {
+          "key": "dm_reports.daily",
+          "mode": "read",
+          "service": "dwh"
+        }
+      ],
+      "meta": {
+        "synthetic": true,
+        "seed": 7,
+        "index": 20,
+        "owner": "analyst"
+      }
+    },
+    {
+      "name": "Регламентный расчёт #22",
+      "flow": "auto",
+      "urgency": 4,
+      "duration_sec": 38,
+      "sla_in_sec": 600,
+      "resources": [
+        {
+          "key": "dm_market.positions",
+          "mode": "write",
+          "service": "dwh"
+        }
+      ],
+      "meta": {
+        "synthetic": true,
+        "seed": 7,
+        "index": 21,
+        "owner": "scheduler"
+      }
+    },
+    {
+      "name": "Регламентный расчёт #23",
+      "flow": "auto",
+      "urgency": 8,
+      "duration_sec": 19,
+      "sla_in_sec": 300,
+      "resources": [
+        {
+          "key": "dm_credit.portfolio",
+          "mode": "read",
+          "service": "risk-db"
+        },
+        {
+          "key": "dm_ops.events",
+          "mode": "read",
+          "service": "risk-db"
+        },
+        {
+          "key": "dm_reserves.ecl",
+          "mode": "read",
+          "service": "market-db"
+        }
+      ],
+      "meta": {
+        "synthetic": true,
+        "seed": 7,
+        "index": 22,
+        "owner": "scheduler"
+      }
+    },
+    {
+      "name": "Регламентный расчёт #24",
+      "flow": "auto",
+      "urgency": 3,
+      "duration_sec": 45,
+      "sla_in_sec": 300,
+      "resources": [
+        {
+          "key": "dm_reserves.ecl",
+          "mode": "write",
+          "service": "risk-db"
+        },
+        {
+          "key": "dm_credit.params",
+          "mode": "read",
+          "service": "market-db"
+        },
+        {
+          "key": "dm_capital.rwa",
+          "mode": "read",
+          "service": "risk-db"
+        }
+      ],
+      "meta": {
+        "synthetic": true,
+        "seed": 7,
+        "index": 23,
+        "owner": "scheduler"
+      }
+    },
+    {
+      "name": "Регламентный расчёт #25",
+      "flow": "auto",
+      "urgency": 4,
+      "duration_sec": 9,
+      "sla_in_sec": 180,
+      "resources": [
+        {
+          "key": "dm_credit.portfolio",
+          "mode": "write",
+          "service": "market-db"
+        },
+        {
+          "key": "dm_credit.collateral",
+          "mode": "write",
+          "service": "risk-db"
+        },
+        {
+          "key": "dm_ops.events",
+          "mode": "write",
+          "service": "market-db"
+        },
+        {
+          "key": "dm_reserves.ecl",
+          "mode": "write",
+          "service": "market-db"
+        }
+      ],
+      "meta": {
+        "synthetic": true,
+        "seed": 7,
+        "index": 24,
+        "owner": "scheduler"
+      }
+    },
+    {
+      "name": "Ручной пересчёт #26",
+      "flow": "manual",
+      "urgency": 9,
+      "duration_sec": 42,
+      "sla_in_sec": 300,
+      "resources": [
+        {
+          "key": "dm_market.quotes",
+          "mode": "write",
+          "service": "dwh"
+        }
+      ],
+      "meta": {
+        "synthetic": true,
+        "seed": 7,
+        "index": 25,
+        "owner": "analyst"
+      }
+    },
+    {
+      "name": "Регламентный расчёт #27",
+      "flow": "auto",
+      "urgency": 8,
+      "duration_sec": 45,
+      "sla_in_sec": 600,
+      "resources": [
+        {
+          "key": "dm_credit.portfolio",
+          "mode": "read",
+          "service": "dwh"
+        }
+      ],
+      "meta": {
+        "synthetic": true,
+        "seed": 7,
+        "index": 26,
+        "owner": "scheduler"
+      }
+    },
+    {
+      "name": "Регламентный расчёт #28",
+      "flow": "auto",
+      "urgency": 1,
+      "duration_sec": 17,
+      "sla_in_sec": 120,
+      "resources": [
+        {
+          "key": "dm_reports.night",
+          "mode": "write",
+          "service": "risk-db"
+        },
+        {
+          "key": "dm_credit.collateral",
+          "mode": "read",
+          "service": "market-db"
+        }
+      ],
+      "meta": {
+        "synthetic": true,
+        "seed": 7,
+        "index": 27,
+        "owner": "scheduler"
+      }
+    },
+    {
+      "name": "Регламентный расчёт #29",
+      "flow": "auto",
+      "urgency": 9,
+      "duration_sec": 41,
+      "sla_in_sec": 600,
+      "resources": [
+        {
+          "key": "dm_credit.portfolio",
+          "mode": "read",
+          "service": "risk-db"
+        },
+        {
+          "key": "dm_ops.events",
+          "mode": "write",
+          "service": "dwh"
+        }
+      ],
+      "meta": {
+        "synthetic": true,
+        "seed": 7,
+        "index": 28,
+        "owner": "scheduler"
+      }
+    },
+    {
+      "name": "Регламентный расчёт #30",
+      "flow": "auto",
+      "urgency": 9,
+      "duration_sec": 36,
+      "sla_in_sec": 600,
+      "resources": [
+        {
+          "key": "dm_credit.params",
+          "mode": "write",
+          "service": "market-db"
+        },
+        {
+          "key": "dm_reports.night",
+          "mode": "write",
+          "service": "risk-db"
+        }
+      ],
+      "meta": {
+        "synthetic": true,
+        "seed": 7,
+        "index": 29,
+        "owner": "scheduler"
+      }
+    },
+    {
+      "name": "Ручной пересчёт #31",
+      "flow": "manual",
+      "urgency": 9,
+      "duration_sec": 36,
+      "sla_in_sec": 600,
+      "resources": [
+        {
+          "key": "dm_credit.params",
+          "mode": "write",
+          "service": "market-db"
+        }
+      ],
+      "meta": {
+        "synthetic": true,
+        "seed": 7,
+        "index": 30,
+        "owner": "analyst"
+      }
+    },
+    {
+      "name": "Регламентный расчёт #32",
+      "flow": "auto",
+      "urgency": 7,
+      "duration_sec": 15,
+      "sla_in_sec": 300,
+      "resources": [
+        {
+          "key": "dm_ops.events",
+          "mode": "read",
+          "service": "dwh"
+        },
+        {
+          "key": "dm_reports.night",
+          "mode": "read",
+          "service": "market-db"
+        },
+        {
+          "key": "dm_market.positions",
+          "mode": "read",
+          "service": "market-db"
+        }
+      ],
+      "meta": {
+        "synthetic": true,
+        "seed": 7,
+        "index": 31,
+        "owner": "scheduler"
+      }
+    },
+    {
+      "name": "Регламентный расчёт #33",
+      "flow": "auto",
+      "urgency": 6,
+      "duration_sec": 17,
+      "sla_in_sec": 180,
+      "resources": [
+        {
+          "key": "dm_credit.portfolio",
+          "mode": "read",
+          "service": "calc-cluster"
+        },
+        {
+          "key": "dm_reserves.ecl",
+          "mode": "write",
+          "service": "dwh"
+        },
+        {
+          "key": "dm_credit.params",
+          "mode": "read",
+          "service": "market-db"
+        }
+      ],
+      "meta": {
+        "synthetic": true,
+        "seed": 7,
+        "index": 32,
+        "owner": "scheduler"
+      }
+    },
+    {
+      "name": "Регламентный расчёт #34",
+      "flow": "auto",
+      "urgency": 7,
+      "duration_sec": 39,
+      "sla_in_sec": 120,
+      "resources": [
+        {
+          "key": "dm_ops.events",
+          "mode": "write",
+          "service": "risk-db"
+        }
+      ],
+      "meta": {
+        "synthetic": true,
+        "seed": 7,
+        "index": 33,
+        "owner": "scheduler"
+      }
+    },
+    {
+      "name": "Регламентный расчёт #35",
+      "flow": "auto",
+      "urgency": 6,
+      "duration_sec": 9,
+      "sla_in_sec": 180,
+      "resources": [
+        {
+          "key": "dm_market.positions",
+          "mode": "read",
+          "service": "calc-cluster"
+        },
+        {
+          "key": "dm_credit.collateral",
+          "mode": "write",
+          "service": "market-db"
+        },
+        {
+          "key": "dm_capital.rwa",
+          "mode": "write",
+          "service": "risk-db"
+        }
+      ],
+      "meta": {
+        "synthetic": true,
+        "seed": 7,
+        "index": 34,
+        "owner": "scheduler"
+      }
+    },
+    {
+      "name": "Ручной пересчёт #36",
+      "flow": "manual",
+      "urgency": 7,
+      "duration_sec": 13,
+      "sla_in_sec": 180,
+      "resources": [
+        {
+          "key": "dm_ops.events",
+          "mode": "write",
+          "service": "dwh"
+        },
+        {
+          "key": "dm_reports.daily",
+          "mode": "write",
+          "service": "risk-db"
+        },
+        {
+          "key": "dm_credit.portfolio",
+          "mode": "write",
+          "service": "market-db"
+        }
+      ],
+      "meta": {
+        "synthetic": true,
+        "seed": 7,
+        "index": 35,
+        "owner": "analyst"
+      }
+    },
+    {
+      "name": "Регламентный расчёт #37",
+      "flow": "auto",
+      "urgency": 7,
+      "duration_sec": 17,
+      "sla_in_sec": 600,
+      "resources": [
+        {
+          "key": "dm_credit.portfolio",
+          "mode": "write",
+          "service": "market-db"
+        },
+        {
+          "key": "dm_credit.collateral",
+          "mode": "read",
+          "service": "dwh"
+        }
+      ],
+      "meta": {
+        "synthetic": true,
+        "seed": 7,
+        "index": 36,
+        "owner": "scheduler"
+      }
+    },
+    {
+      "name": "Регламентный расчёт #38",
+      "flow": "auto",
+      "urgency": 5,
+      "duration_sec": 9,
+      "sla_in_sec": 900,
+      "resources": [
+        {
+          "key": "dm_reports.daily",
+          "mode": "write",
+          "service": "risk-db"
+        },
+        {
+          "key": "dm_ops.events",
+          "mode": "read",
+          "service": "market-db"
+        },
+        {
+          "key": "dm_reserves.ecl",
+          "mode": "write",
+          "service": "risk-db"
+        }
+      ],
+      "meta": {
+        "synthetic": true,
+        "seed": 7,
+        "index": 37,
+        "owner": "scheduler"
+      }
+    },
+    {
+      "name": "Регламентный расчёт #39",
+      "flow": "auto",
+      "urgency": 2,
+      "duration_sec": 24,
+      "sla_in_sec": 60,
+      "resources": [
+        {
+          "key": "dm_market.quotes",
+          "mode": "write",
+          "service": "market-db"
+        }
+      ],
+      "meta": {
+        "synthetic": true,
+        "seed": 7,
+        "index": 38,
+        "owner": "scheduler"
+      }
+    },
+    {
+      "name": "Регламентный расчёт #40",
+      "flow": "auto",
+      "urgency": 3,
+      "duration_sec": 10,
+      "sla_in_sec": 600,
+      "resources": [
+        {
+          "key": "dm_credit.portfolio",
+          "mode": "read",
+          "service": "calc-cluster"
+        },
+        {
+          "key": "dm_reserves.ecl",
+          "mode": "read",
+          "service": "dwh"
+        }
+      ],
+      "meta": {
+        "synthetic": true,
+        "seed": 7,
+        "index": 39,
+        "owner": "scheduler"
+      }
+    },
+    {
+      "name": "Ручной пересчёт #41",
+      "flow": "manual",
+      "urgency": 9,
+      "duration_sec": 30,
+      "sla_in_sec": 60,
+      "resources": [
+        {
+          "key": "dm_credit.portfolio",
+          "mode": "write",
+          "service": "market-db"
+        },
+        {
+          "key": "dm_market.positions",
+          "mode": "write",
+          "service": "dwh"
+        },
+        {
+          "key": "dm_credit.params",
+          "mode": "read",
+          "service": "market-db"
+        },
+        {
+          "key": "dm_credit.collateral",
+          "mode": "write",
+          "service": "market-db"
+        }
+      ],
+      "meta": {
+        "synthetic": true,
+        "seed": 7,
+        "index": 40,
+        "owner": "analyst"
+      }
+    },
+    {
+      "name": "Регламентный расчёт #42",
+      "flow": "auto",
+      "urgency": 8,
+      "duration_sec": 14,
+      "sla_in_sec": 900,
+      "resources": [
+        {
+          "key": "dm_credit.portfolio",
+          "mode": "write",
+          "service": "market-db"
+        },
+        {
+          "key": "dm_reports.daily",
+          "mode": "write",
+          "service": "market-db"
+        }
+      ],
+      "meta": {
+        "synthetic": true,
+        "seed": 7,
+        "index": 41,
+        "owner": "scheduler"
+      }
+    },
+    {
+      "name": "Регламентный расчёт #43",
+      "flow": "auto",
+      "urgency": 7,
+      "duration_sec": 30,
+      "sla_in_sec": 60,
+      "resources": [
+        {
+          "key": "dm_capital.rwa",
+          "mode": "read",
+          "service": "dwh"
+        },
+        {
+          "key": "dm_ops.events",
+          "mode": "read",
+          "service": "market-db"
+        },
+        {
+          "key": "dm_reports.daily",
+          "mode": "write",
+          "service": "market-db"
+        }
+      ],
+      "meta": {
+        "synthetic": true,
+        "seed": 7,
+        "index": 42,
+        "owner": "scheduler"
+      }
+    },
+    {
+      "name": "Регламентный расчёт #44",
+      "flow": "auto",
+      "urgency": 7,
+      "duration_sec": 18,
+      "sla_in_sec": 60,
+      "resources": [
+        {
+          "key": "dm_credit.portfolio",
+          "mode": "write",
+          "service": "dwh"
+        }
+      ],
+      "meta": {
+        "synthetic": true,
+        "seed": 7,
+        "index": 43,
+        "owner": "scheduler"
+      }
+    },
+    {
+      "name": "Регламентный расчёт #45",
+      "flow": "auto",
+      "urgency": 1,
+      "duration_sec": 37,
+      "sla_in_sec": 120,
+      "resources": [
+        {
+          "key": "dm_credit.portfolio",
+          "mode": "read",
+          "service": "dwh"
+        },
+        {
+          "key": "dm_capital.rwa",
+          "mode": "write",
+          "service": "dwh"
+        }
+      ],
+      "meta": {
+        "synthetic": true,
+        "seed": 7,
+        "index": 44,
+        "owner": "scheduler"
+      }
+    },
+    {
+      "name": "Ручной пересчёт #46",
+      "flow": "manual",
+      "urgency": 9,
+      "duration_sec": 29,
+      "sla_in_sec": 600,
+      "resources": [
+        {
+          "key": "dm_market.quotes",
+          "mode": "write",
+          "service": "dwh"
+        }
+      ],
+      "meta": {
+        "synthetic": true,
+        "seed": 7,
+        "index": 45,
+        "owner": "analyst"
+      }
+    },
+    {
+      "name": "Регламентный расчёт #47",
+      "flow": "auto",
+      "urgency": 1,
+      "duration_sec": 29,
+      "sla_in_sec": 300,
+      "resources": [
+        {
+          "key": "dm_market.positions",
+          "mode": "read",
+          "service": "dwh"
+        },
+        {
+          "key": "dm_credit.portfolio",
+          "mode": "write",
+          "service": "market-db"
+        }
+      ],
+      "meta": {
+        "synthetic": true,
+        "seed": 7,
+        "index": 46,
+        "owner": "scheduler"
+      }
+    },
+    {
+      "name": "Регламентный расчёт #48",
+      "flow": "auto",
+      "urgency": 4,
+      "duration_sec": 40,
+      "sla_in_sec": 60,
+      "resources": [
+        {
+          "key": "dm_ops.events",
+          "mode": "write",
+          "service": "market-db"
+        }
+      ],
+      "meta": {
+        "synthetic": true,
+        "seed": 7,
+        "index": 47,
+        "owner": "scheduler"
+      }
+    },
+    {
+      "name": "Регламентный расчёт #49",
+      "flow": "auto",
+      "urgency": 7,
+      "duration_sec": 9,
+      "sla_in_sec": 180,
+      "resources": [
+        {
+          "key": "dm_credit.portfolio",
+          "mode": "read",
+          "service": "market-db"
+        },
+        {
+          "key": "dm_market.quotes",
+          "mode": "write",
+          "service": "risk-db"
+        }
+      ],
+      "meta": {
+        "synthetic": true,
+        "seed": 7,
+        "index": 48,
+        "owner": "scheduler"
+      }
+    },
+    {
+      "name": "Регламентный расчёт #50",
+      "flow": "auto",
+      "urgency": 6,
+      "duration_sec": 39,
+      "sla_in_sec": 120,
+      "resources": [
+        {
+          "key": "dm_market.positions",
+          "mode": "write",
+          "service": "market-db"
+        },
+        {
+          "key": "dm_credit.params",
+          "mode": "read",
+          "service": "calc-cluster"
+        }
+      ],
+      "meta": {
+        "synthetic": true,
+        "seed": 7,
+        "index": 49,
+        "owner": "scheduler"
+      }
+    }
+  ]
+}

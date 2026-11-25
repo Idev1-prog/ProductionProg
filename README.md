@@ -35,6 +35,8 @@ risk-orchestrator/
 ├── requirements.txt
 ├── pytest.ini
 ├── .gitignore
+├── .streamlit/
+│   └── config.toml               # скрывает кнопку Deploy и developer-меню
 │
 ├── backend/
 │   ├── main.py                      # FastAPI + фоновый tick-цикл
@@ -117,6 +119,11 @@ streamlit run frontend/app.py
 
 Если API живёт на другом адресе, задайте `RISK_API_URL` или поменяйте поле
 «API URL» в сайдбаре Streamlit.
+
+Кнопка Deploy и developer-меню Streamlit скрыты через `.streamlit/config.toml`
+(`client.toolbarMode = "viewer"`) — интерфейс предназначен для внутреннего
+банковского сервиса, а не для публикации в Streamlit Community Cloud.
+Ручное обновление данных доступно кнопкой «Обновить» в сайдбаре.
 
 ### Загрузка сценария
 

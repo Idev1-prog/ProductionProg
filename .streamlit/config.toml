@@ -1,0 +1,3 @@
+[client]
+# Внутренний сервис банка: скрываем кнопку Deploy и developer-опции в меню.
+toolbarMode = "viewer"

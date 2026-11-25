@@ -59,7 +59,10 @@ refresh_sec = st.sidebar.slider(
     "Период обновления, сек", min_value=1.0, max_value=10.0, value=2.0, step=0.5
 )
 
-if st.sidebar.button("Сбросить состояние", use_container_width=True):
+refresh_column, reset_column = st.sidebar.columns(2)
+if refresh_column.button("🔄 Обновить", use_container_width=True):
+    st.rerun()
+if reset_column.button("🧹 Сбросить", use_container_width=True):
     try:
         client.reset()
         st.toast("Состояние сброшено", icon="🧹")
