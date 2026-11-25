@@ -36,7 +36,58 @@ STATUS_ORDER = [
     "failed",
 ]
 
+DARK_STATUS_COLORS = {
+    "queued": "#94a3b8",
+    "blocked": "#fbbf24",
+    "running": "#3b82f6",
+    "paused": "#a78bfa",
+    "completed": "#34d399",
+    "cancelled": "#f87171",
+    "failed": "#dc2626",
+}
+
 FONT = "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
+
+
+def _is_dark() -> bool:
+    """Определяет активную тему Streamlit (в bare-режиме — светлая)."""
+    try:
+        theme = st.context.theme or {}
+        kind = theme.get("type") if hasattr(theme, "get") else None
+        kind = kind or st.get_option("theme.base")
+        return str(kind).lower() == "dark"
+    except Exception:
+        return False
+
+
+def _palette(dark: bool) -> dict:
+    if dark:
+        return {
+            "paper": "#0e1117",
+            "plot": "#111827",
+            "text": "#e2e8f0",
+            "muted": "#94a3b8",
+            "grid": "#334155",
+            "line": "#475569",
+            "bar_line": "#0b1220",
+            "dot_border": "#0b1220",
+            "hover_bg": "#1e293b",
+            "hover_border": "#475569",
+            "colors": DARK_STATUS_COLORS,
+        }
+    return {
+        "paper": "#ffffff",
+        "plot": "#f8fafc",
+        "text": "#0f172a",
+        "muted": "#64748b",
+        "grid": "#e2e8f0",
+        "line": "#cbd5e1",
+        "bar_line": "#0f172a",
+        "dot_border": "#1d4ed8",
+        "hover_bg": "#ffffff",
+        "hover_border": "#cbd5e1",
+        "colors": STATUS_COLORS,
+    }
 
 
 def _tooltip(row: pd.Series) -> str:
@@ -55,8 +106,9 @@ def _tooltip(row: pd.Series) -> str:
     return "<br>".join(lines)
 
 
-def build_figure(entries: list[dict]) -> go.Figure:
+def build_figure(entries: list[dict], *, dark: bool = False) -> go.Figure:
     """Строит Гант с цветами статусов, маркерами прогресса и линией «сейчас»."""
+    palette = _palette(dark)
     df = pd.DataFrame(entries)
     df["start"] = pd.to_datetime(df["start"], utc=True)
     df["end"] = pd.to_datetime(df["end"], utc=True)
@@ -81,10 +133,10 @@ def build_figure(entries: list[dict]) -> go.Figure:
             name=STATUS_LABELS.get(status, status),
             width=0.62,
             marker=dict(
-                color=STATUS_COLORS.get(status, "#64748b"),
+                color=palette["colors"].get(status, "#64748b"),
                 cornerradius=8,
                 line=dict(
-                    color="#0f172a",
+                    color=palette["bar_line"],
                     width=[2 if flow == "manual" else 0 for flow in subset["flow"]],
                 ),
                 opacity=0.95,
@@ -107,14 +159,14 @@ def build_figure(entries: list[dict]) -> go.Figure:
                 symbol="circle",
                 size=9,
                 color="#ffffff",
-                line=dict(color="#1d4ed8", width=2),
+                line=dict(color=palette["dot_border"], width=2),
             ),
             hoverinfo="skip",
             showlegend=False,
         )
 
     now = pd.Timestamp.now(tz="UTC")
-    fig.add_vline(x=now, line_width=1.5, line_dash="dot", line_color="#64748b")
+    fig.add_vline(x=now, line_width=1.5, line_dash="dot", line_color=palette["muted"])
     fig.add_annotation(
         x=now,
         y=1,
@@ -123,16 +175,16 @@ def build_figure(entries: list[dict]) -> go.Figure:
         showarrow=False,
         xanchor="left",
         yanchor="bottom",
-        font=dict(size=11, color="#64748b"),
+        font=dict(size=11, color=palette["muted"]),
     )
 
     fig.update_layout(
         height=max(360, 52 * len(df) + 130),
         barmode="overlay",
         bargap=0.32,
-        font=dict(family=FONT, size=12, color="#0f172a"),
-        paper_bgcolor="rgba(0,0,0,0)",
-        plot_bgcolor="#ffffff",
+        font=dict(family=FONT, size=12, color=palette["text"]),
+        paper_bgcolor=palette["paper"],
+        plot_bgcolor=palette["plot"],
         margin=dict(l=10, r=24, t=56, b=44),
         legend=dict(
             orientation="h",
@@ -141,27 +193,29 @@ def build_figure(entries: list[dict]) -> go.Figure:
             xanchor="left",
             x=0,
             title_text="",
-            bgcolor="rgba(0,0,0,0)",
-            font=dict(size=11),
+            bgcolor=palette["paper"],
+            font=dict(size=11, color=palette["text"]),
         ),
         hoverlabel=dict(
-            bgcolor="#ffffff",
-            bordercolor="#cbd5e1",
-            font=dict(family=FONT, size=12),
+            bgcolor=palette["hover_bg"],
+            bordercolor=palette["hover_border"],
+            font=dict(family=FONT, size=12, color=palette["text"]),
         ),
     )
     fig.update_xaxes(
         type="date",
         title_text="Время (UTC)",
+        title_font=dict(color=palette["text"]),
+        tickfont=dict(color=palette["text"]),
         tickformat="%H:%M:%S",
         showgrid=True,
-        gridcolor="#eef2f7",
+        gridcolor=palette["grid"],
         gridwidth=1,
         zeroline=False,
         showline=True,
-        linecolor="#cbd5e1",
+        linecolor=palette["line"],
         ticks="outside",
-        tickcolor="#cbd5e1",
+        tickcolor=palette["line"],
         automargin=True,
     )
     fig.update_yaxes(
@@ -169,7 +223,7 @@ def build_figure(entries: list[dict]) -> go.Figure:
         title_text="",
         automargin=True,
         showgrid=False,
-        tickfont=dict(size=12),
+        tickfont=dict(size=12, color=palette["text"]),
     )
     return fig
 
@@ -185,4 +239,10 @@ def render(entries: list[dict]) -> None:
         st.info("Пока нет запущенных процессов. Загрузите сценарий во вкладке «Управление».")
         return
 
-    st.plotly_chart(build_figure(entries), use_container_width=True)
+    # theme=None: цвета задаёт компонент сам, иначе Streamlit перекрашивает
+    # подписи в тёмной теме и они становятся нечитаемыми.
+    st.plotly_chart(
+        build_figure(entries, dark=_is_dark()),
+        theme=None,
+        use_container_width=True,
+    )
