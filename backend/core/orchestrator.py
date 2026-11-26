@@ -169,6 +169,7 @@ class Orchestrator:
     def tick(self) -> None:
         now = utcnow()
         self._finish_due(now)
+        self._refresh_progress(now)
         self._refresh_priorities(now)
 
         running_count = len(self._running())
@@ -206,6 +207,12 @@ class Orchestrator:
                 f"Процесс «{process.name}» завершён",
                 process.id,
             )
+
+    def _refresh_progress(self, now) -> None:
+        """Продвигает выполнение процессов по времени между тиками."""
+
+        for process in self._running():
+            process.progress = self.worker.progress(process, now)
 
     def _refresh_priorities(self, now) -> None:
         for process in self.storage.processes.values():

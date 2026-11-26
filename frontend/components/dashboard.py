@@ -60,7 +60,7 @@ def _metric_row(state: dict) -> None:
     columns[5].metric("Конфликты", metrics["conflicts_total"])
 
     columns = st.columns(4)
-    columns[0].metric("Утилизация", f"{metrics['utilization_pct']}%")
+    columns[0].metric("Загруженность", f"{metrics['utilization_pct']}%")
     columns[1].metric("Среднее ожидание", f"{metrics['avg_wait_sec']} c")
     columns[2].metric("Макс. ожидание", f"{metrics['max_wait_sec']} c")
     columns[3].metric("SLA под риском", metrics["sla_at_risk"])
