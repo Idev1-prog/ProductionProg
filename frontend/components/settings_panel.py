@@ -18,7 +18,7 @@ def render(client: RiskApiClient, settings: dict) -> None:
         manual_base = st.slider(
             "База ручного приоритета",
             min_value=1000,
-            max_value=5000,
+            max_value=10000,
             value=int(settings["manual_base"]),
             step=50,
             help="Всегда больше любого автоматического приоритета.",
@@ -26,21 +26,21 @@ def render(client: RiskApiClient, settings: dict) -> None:
         sla_weight = st.slider(
             "Вес SLA",
             min_value=0,
-            max_value=100,
+            max_value=1000,
             value=int(settings["sla_weight"]),
             step=5,
         )
         urgency_weight = st.slider(
             "Вес срочности",
             min_value=0,
-            max_value=100,
+            max_value=1000,
             value=int(settings["urgency_weight"]),
             step=5,
         )
         starvation_weight = st.slider(
             "Вес защиты от голода",
             min_value=0,
-            max_value=100,
+            max_value=1000,
             value=int(settings["starvation_weight"]),
             step=5,
             help="Чем дольше процесс ждёт, тем выше его балл.",
@@ -48,14 +48,14 @@ def render(client: RiskApiClient, settings: dict) -> None:
         max_running = st.slider(
             "Параллельных процессов",
             min_value=1,
-            max_value=10,
+            max_value=100,
             value=int(settings["max_running"]),
             step=1,
         )
         tick_interval = st.slider(
             "Интервал планировщика, сек",
             min_value=0.1,
-            max_value=5.0,
+            max_value=60.0,
             value=float(settings["tick_interval"]),
             step=0.1,
         )
@@ -87,9 +87,10 @@ def render(client: RiskApiClient, settings: dict) -> None:
 
 **Ручной поток**
 
-`score = manual_base + urgency · 5 + wait · 0.1`
+`score = max(manual_base, сумма_весов + 1000) + urgency · 5 + wait · 0.1`
 
-Ручной поток всегда получает ресурсы первым, а при конфликте вытесняет
+База автоматически повышается, если сумма весов слишком велика — ручной
+поток всегда получает ресурсы первым, а при конфликте вытесняет
 автоматический процесс (событие `OVERRIDE` в журнале конфликтов).
 """
     )

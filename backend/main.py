@@ -49,6 +49,9 @@ async def _tick_loop() -> None:
     while True:
         try:
             orchestrator.tick()
+            # Тик меняет статусы, блокировки и прогресс — снимок должен
+            # соответствовать последнему состоянию, а не только вызовам API.
+            await asyncio.to_thread(storage.save)
         except Exception:  # pragma: no cover - демо не должно падать из-за одного тика
             logger.exception("Ошибка в tick-цикле")
         await orchestrator.worker.sleep(orchestrator.settings.tick_interval)

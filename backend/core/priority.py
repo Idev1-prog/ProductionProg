@@ -23,6 +23,7 @@ from backend.core.models import (
 
 SLA_HORIZON_SEC = 600.0
 STARVATION_HORIZON_SEC = 300.0
+MANUAL_PRIORITY_MARGIN = 1000.0
 
 
 def sla_score(
@@ -64,9 +65,20 @@ def score_process(
     waited = max(0.0, (now - process.created_at).total_seconds())
 
     if process.flow is FlowType.MANUAL:
-        # Абсолютный приоритет + небольшие tie-breaker'ы.
+        # Абсолютный приоритет: база должна быть выше максимального балла
+        # автоматического потока даже при максимальных весах из настроек.
+        auto_ceiling = (
+            settings.sla_weight
+            + settings.urgency_weight
+            + settings.starvation_weight
+        )
+        base = max(
+            1000.0,
+            settings.manual_base,
+            auto_ceiling + MANUAL_PRIORITY_MARGIN,
+        )
         return (
-            max(1000.0, settings.manual_base)
+            base
             + process.urgency * 5.0
             + min(waited, 300.0) * 0.1
         )

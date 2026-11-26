@@ -227,6 +227,7 @@ class Process:
             "sla_deadline": _iso(self.sla_deadline),
             "blocked_by": list(self.blocked_by),
             "blocked_reason": self.blocked_reason,
+            "conflict_signature": self.conflict_signature,
             "meta": dict(self.meta),
             "wait_sec": round(self.wait_seconds(now), 1),
             "elapsed_sec": round(self.elapsed_seconds(now), 1),

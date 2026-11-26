@@ -126,6 +126,12 @@ def restart_process(process_id: str, request: Request) -> ProcessOut:
 def load_scenario(payload: ScenarioIn, request: Request) -> list[ProcessOut]:
     orchestrator = _orchestrator(request)
     try:
+        # Проверяем все процессы до мутаций, чтобы не получить половинчатый сценарий.
+        for item in payload.processes:
+            if not item.name.strip():
+                raise ValueError("Имя процесса не может быть пустым")
+            if not any(resource.key.strip() for resource in item.resources):
+                raise ValueError("Процесс должен обращаться хотя бы к одному ресурсу")
         if payload.settings is not None:
             orchestrator.update_settings(payload.settings.model_dump())
         created = [_create(orchestrator, item) for item in payload.processes]

@@ -106,7 +106,9 @@ def _tooltip(row: pd.Series) -> str:
     return "<br>".join(lines)
 
 
-def build_figure(entries: list[dict], *, dark: bool = False) -> go.Figure:
+def build_figure(
+    entries: list[dict], *, dark: bool = False, now: str | None = None
+) -> go.Figure:
     """Строит Гант с цветами статусов, маркерами прогресса и линией «сейчас»."""
     palette = _palette(dark)
     df = pd.DataFrame(entries)
@@ -165,10 +167,13 @@ def build_figure(entries: list[dict], *, dark: bool = False) -> go.Figure:
             showlegend=False,
         )
 
-    now = pd.Timestamp.now(tz="UTC")
-    fig.add_vline(x=now, line_width=1.5, line_dash="dot", line_color=palette["muted"])
+    # Берём время с API, чтобы линия «сейчас» не зависела от часов браузера.
+    now_at = pd.to_datetime(now, utc=True) if now else pd.Timestamp.now(tz="UTC")
+    fig.add_vline(
+        x=now_at, line_width=1.5, line_dash="dot", line_color=palette["muted"]
+    )
     fig.add_annotation(
-        x=now,
+        x=now_at,
         y=1,
         yref="paper",
         text="сейчас",
@@ -228,7 +233,7 @@ def build_figure(entries: list[dict], *, dark: bool = False) -> go.Figure:
     return fig
 
 
-def render(entries: list[dict]) -> None:
+def render(entries: list[dict], now: str | None = None) -> None:
     st.subheader("Диаграмма Ганта")
     st.caption(
         "Цвет — статус, тёмная обводка — ручной поток, белая точка на синей полосе — "
@@ -242,7 +247,7 @@ def render(entries: list[dict]) -> None:
     # theme=None: цвета задаёт компонент сам, иначе Streamlit перекрашивает
     # подписи в тёмной теме и они становятся нечитаемыми.
     st.plotly_chart(
-        build_figure(entries, dark=_is_dark()),
+        build_figure(entries, dark=_is_dark(), now=now),
         theme=None,
         use_container_width=True,
     )

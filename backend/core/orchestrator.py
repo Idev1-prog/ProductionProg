@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
+import threading
 import uuid
 from datetime import timedelta
-from typing import Any, Iterable
+from functools import wraps
+from typing import Any, Iterable, Callable, TypeVar
 
 from backend.core import conflicts as conflict_utils
 from backend.core.models import (
@@ -28,11 +30,25 @@ TERMINAL_STATUSES = {
     ProcessStatus.FAILED,
 }
 
+T = TypeVar("T")
+
+
+def synchronized(method: Callable[..., T]) -> Callable[..., T]:
+    """Сериализует доступ к состоянию: тик-цикл и API работают в разных потоках."""
+
+    @wraps(method)
+    def wrapper(self: "Orchestrator", *args: Any, **kwargs: Any) -> T:
+        with self._lock:
+            return method(self, *args, **kwargs)
+
+    return wrapper
+
 
 class Orchestrator:
     def __init__(self, storage: Storage, worker: Worker | None = None) -> None:
         self.storage = storage
         self.worker = worker or Worker()
+        self._lock = threading.RLock()
 
     # ------------------------------------------------------------------
     # Свойства и утилиты
@@ -83,6 +99,7 @@ class Orchestrator:
     # ------------------------------------------------------------------
     # Постановка процессов
     # ------------------------------------------------------------------
+    @synchronized
     def add_process(
         self,
         *,
@@ -166,6 +183,7 @@ class Orchestrator:
     # ------------------------------------------------------------------
     # Планировщик
     # ------------------------------------------------------------------
+    @synchronized
     def tick(self) -> None:
         now = utcnow()
         self._finish_due(now)
@@ -284,6 +302,7 @@ class Orchestrator:
     # ------------------------------------------------------------------
     # Управление жизненным циклом
     # ------------------------------------------------------------------
+    @synchronized
     def pause(self, process_id: str) -> Process:
         process = self._get(process_id)
         now = utcnow()
@@ -304,6 +323,7 @@ class Orchestrator:
         self.storage.save()
         return process
 
+    @synchronized
     def resume(self, process_id: str) -> Process:
         process = self._get(process_id)
         if process.status is not ProcessStatus.PAUSED:
@@ -323,6 +343,7 @@ class Orchestrator:
         self.storage.save()
         return process
 
+    @synchronized
     def cancel(self, process_id: str) -> Process:
         process = self._get(process_id)
         if process.status in TERMINAL_STATUSES:
@@ -340,6 +361,7 @@ class Orchestrator:
         self.storage.save()
         return process
 
+    @synchronized
     def restart(self, process_id: str) -> Process:
         process = self._get(process_id)
         self._release_locks(process.id)
@@ -363,8 +385,10 @@ class Orchestrator:
     # ------------------------------------------------------------------
     # Настройки
     # ------------------------------------------------------------------
+    @synchronized
     def update_settings(self, data: dict[str, Any]) -> PrioritySettings:
-        settings = self.storage.settings
+        # Валидация идёт на копии: при ошибке текущие настройки не портятся.
+        settings = PrioritySettings(**self.storage.settings.to_dict())
         numeric_fields = (
             "manual_base",
             "sla_weight",
@@ -386,6 +410,7 @@ class Orchestrator:
         settings.max_running = max(1, min(100, settings.max_running))
         settings.tick_interval = max(0.1, min(60.0, settings.tick_interval))
 
+        self.storage.settings = settings
         self._refresh_priorities(utcnow())
         self.storage.log_event(
             "settings_updated",
@@ -395,12 +420,14 @@ class Orchestrator:
         self.storage.save()
         return settings
 
+    @synchronized
     def reset(self) -> None:
         self.storage.reset()
 
     # ------------------------------------------------------------------
     # Чтение состояния
     # ------------------------------------------------------------------
+    @synchronized
     def get_state(self) -> dict[str, Any]:
         now = utcnow()
         processes = sorted(
@@ -462,7 +489,7 @@ class Orchestrator:
             "avg_wait_sec": round(avg_wait, 1),
             "max_wait_sec": round(max_wait, 1),
             "utilization_pct": round(
-                len(running) / max(1, self.settings.max_running) * 100.0, 1
+                min(100.0, len(running) / max(1, self.settings.max_running) * 100.0), 1
             ),
         }
 
@@ -500,6 +527,7 @@ class Orchestrator:
                 entry["processes"].append(process.name)
         return sorted(load.values(), key=lambda item: item["key"])
 
+    @synchronized
     def get_gantt(self) -> list[dict[str, Any]]:
         now = utcnow()
         entries: list[dict[str, Any]] = []
@@ -535,8 +563,10 @@ class Orchestrator:
             )
         return entries
 
+    @synchronized
     def get_conflicts(self) -> list[dict[str, Any]]:
         return list(reversed(self.storage.conflicts))
 
+    @synchronized
     def get_events(self) -> list[dict[str, Any]]:
         return list(reversed(self.storage.events))

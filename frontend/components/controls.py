@@ -19,16 +19,30 @@ def parse_resources(text: str) -> list[dict[str, str]]:
         line = raw_line.strip()
         if not line or line.startswith("#"):
             continue
+        # Ключ может содержать двоеточия (например, срез по дате), поэтому
+        # режим/сервис ищем по краям, а не по позиции второго токена.
         parts = [part.strip() for part in line.split(":")]
-        key = parts[0]
-        mode = parts[1] if len(parts) > 1 and parts[1] else "write"
-        service = parts[2] if len(parts) > 2 and parts[2] else "risk-db"
+        modes = {"read", "write"}
+        key = line.strip()
+        mode = "write"
+        service = "risk-db"
+
+        if len(parts) >= 2 and parts[1] in modes:
+            key = parts[0]
+            mode = parts[1]
+            if len(parts) >= 3 and parts[2]:
+                service = parts[2]
+        elif len(parts) >= 2 and parts[-1] in modes:
+            key = ":".join(parts[:-1]).strip()
+            mode = parts[-1]
+        elif len(parts) >= 3 and parts[-2] in modes:
+            key = ":".join(parts[:-2]).strip()
+            mode = parts[-2]
+            if parts[-1]:
+                service = parts[-1]
+
         if not key:
             continue
-        if mode not in {"read", "write"}:
-            raise ValueError(
-                f"Режим «{mode}» не поддерживается. Используйте read или write."
-            )
         resources.append({"key": key, "mode": mode, "service": service})
     if not resources:
         raise ValueError("Укажите хотя бы один ресурс")

@@ -176,7 +176,7 @@ def render(state: dict) -> None:
     _running_progress(state)
 
     st.markdown("**Тепловая карта нагрузки на ресурсы**")
-    st.caption("Строки — операции, столбцы — resource_key (таблица / срез / дата).")
+    st.caption("Строки — операции READ/WRITE, столбцы — resource_key.")
     _heatmap(state, dark=_is_dark())
 
     with st.expander("Журнал событий оркестратора"):

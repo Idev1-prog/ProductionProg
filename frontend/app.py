@@ -107,7 +107,7 @@ with tab_dashboard:
     dashboard.render(state)
 
 with tab_gantt:
-    gantt.render(gantt_entries)
+    gantt.render(gantt_entries, now=state.get("now"))
 
 with tab_queue:
     queue_table.render(state)
